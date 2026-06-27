@@ -1,22 +1,34 @@
 from fastapi import APIRouter
 
+from models.payment import Payment
+
+from services.validator import PaymentValidator
+from services.processor import PaymentProcessor
+
 router = APIRouter(
     prefix="/payments",
     tags=["Payments"]
 )
 
-
-@router.get("/")
-def get_payments():
-
-    return {
-        "message": "Payment endpoint"
-    }
+validator = PaymentValidator()
+processor = PaymentProcessor()
 
 
 @router.post("/")
-def create_payment():
+def create_payment(payment: Payment):
+
+    valid, message = validator.validate(payment)
+
+    if not valid:
+
+        return {
+            "success": False,
+            "message": message
+        }
+
+    transaction = processor.process(payment)
 
     return {
-        "message": "Payment created"
+        "success": True,
+        "transaction": transaction
     }
