@@ -7,3 +7,5 @@ class Payment(BaseModel):
     amount: float
     currency: str
     description: str
+
+    provider: str
